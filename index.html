@@ -272,6 +272,42 @@
   .conf-item .label { color: var(--muted); }
   .conf-item .value { color: var(--text); font-weight: 500; text-align: right; }
 
+
+  /* ── Tooltip ── */
+  .tooltip-bubble {
+    position: fixed; z-index: 9999;
+    max-width: 260px; min-width: 180px;
+    background: #011e2e;
+    border: 1px solid rgba(255,199,44,0.35);
+    border-radius: 10px;
+    padding: 12px 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    pointer-events: none;
+    opacity: 0; transform: translateY(6px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+  .tooltip-bubble.visible {
+    opacity: 1; transform: translateY(0);
+  }
+  .tooltip-title {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--accent); margin-bottom: 5px; letter-spacing: 0.04em;
+  }
+  .tooltip-desc {
+    font-size: 12px; color: var(--muted); line-height: 1.55; font-weight: 300;
+  }
+  /* info icon on each card */
+  .room-info-icon {
+    position: absolute; top: 10px; right: 12px;
+    width: 16px; height: 16px; border-radius: 50%;
+    background: rgba(255,199,44,0.15); border: 1px solid rgba(255,199,44,0.35);
+    color: var(--accent); font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    cursor: default; flex-shrink: 0; z-index: 2;
+    transition: background 0.15s;
+  }
+  .room-card.selected .room-info-icon { right: 30px; }
+  .room-info-icon:hover { background: rgba(255,199,44,0.3); }
   @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:translateY(0); } }
   @keyframes fadeUp   { from { opacity:0; transform:translateY(16px);  } to { opacity:1; transform:translateY(0); } }
   ::-webkit-scrollbar { width: 6px; }
@@ -311,25 +347,36 @@
       <div class="field-row">
         <div class="field"><label>First Name</label><input type="text" id="fname" placeholder="First name" oninput="validateForm()"/></div>
         <div class="field"><label>Last Name</label><input type="text" id="lname" placeholder="Last name" oninput="validateForm()"/></div>
-        <div class="field"><label>Site ID</label><select id="siteId" onchange="validateForm()"><option value="">— Select your site —</option>
-<option value="826dc_noyse">826DC @Noyse</option>
-<option value="826dc_awl">826DC: AWL (After-School Writing Lab)</option>
-<option value="awc">A Wider Circle (AWC)</option>
-<option value="anbryce">AnBryce</option>
-<option value="artreach">ArtReach</option>
-<option value="ecdc">ECDC</option>
-<option value="floc">For Love of Children (FLOC)</option>
-<option value="higher_achievement_brookland">Higher Achievement @Brookland</option>
-<option value="higher_achievement_eliot_hine">Higher Achievement @Eliot-Hine</option>
-<option value="hortons_kids">Horton's Kids</option>
-<option value="lsf">Latino Student Fund (LSF)</option>
-<option value="layc_bancroft">LAYC @Bancroft</option>
-<option value="layc_teen_center">LAYC @Teen Center</option>
-<option value="lp2m">Life Pieces to Masterpieces (LP2M)</option>
-<option value="lffp">Little Friends for Peace (LFFP)</option>
-<option value="miriams">Miriam's</option>
-<option value="rav">Raising a Village (RAV)</option>
-<option value="reading_partners">Reading Partners</option></select></div>
+        <div class="field">
+          <label>Site ID</label>
+          <select id="siteId" onchange="handleSiteChange()">
+            <option value="">— Select your site —</option>
+            <option value="826dc_noyse">826DC @Noyse</option>
+            <option value="826dc_awl">826DC: AWL (After-School Writing Lab)</option>
+            <option value="awc">A Wider Circle (AWC)</option>
+            <option value="anbryce">AnBryce</option>
+            <option value="artreach">ArtReach</option>
+            <option value="civic_house">Civic House</option>
+            <option value="ecdc">ECDC</option>
+            <option value="floc">For Love of Children (FLOC)</option>
+            <option value="higher_achievement_brookland">Higher Achievement @Brookland</option>
+            <option value="higher_achievement_eliot_hine">Higher Achievement @Eliot-Hine</option>
+            <option value="hortons_kids">Horton's Kids</option>
+            <option value="lsf">Latino Student Fund (LSF)</option>
+            <option value="layc_bancroft">LAYC @Bancroft</option>
+            <option value="layc_teen_center">LAYC @Teen Center</option>
+            <option value="lp2m">Life Pieces to Masterpieces (LP2M)</option>
+            <option value="lffp">Little Friends for Peace (LFFP)</option>
+            <option value="math_matters">Math Matters</option>
+            <option value="miriams">Miriam's</option>
+            <option value="rav">Raising a Village (RAV)</option>
+            <option value="reading_partners">Reading Partners</option>
+            <option value="other">Other</option>
+          </select>
+          <div id="siteOtherWrap" style="display:none; margin-top:8px;">
+            <input type="text" id="siteOther" placeholder="Please specify your site" oninput="validateForm()" style="width:100%;"/>
+          </div>
+        </div>
         <div class="field"><label>Email</label><input type="email" id="email" placeholder="your@email.com" oninput="validateForm()"/></div>
       </div>
     </div>
@@ -364,6 +411,12 @@
   </div>
 
 </div>
+
+<!-- Global tooltip -->
+<div class="tooltip-bubble" id="tooltipBubble">
+  <div class="tooltip-title" id="tooltipTitle"></div>
+  <div class="tooltip-desc" id="tooltipDesc"></div>
+</div>
 <script>
 // ═══════════════════════════════════════════════════════════════════
 // SCHEDULE DATA
@@ -390,25 +443,34 @@ const BLOCKS = [
       id: "bA_narcan",
       label: "NARCAN Workshop #1  ·  10:30 AM – 12:00 PM",
       sublabel: "USC 405 — spans this entire block; covers Sessions I & II",
-      rooms: [{ id:"bA_n1", name:"USC 405", topic:"NARCAN Workshop #1", time:"10:30am–12:00pm", capacity:30, isNarcan:true }]
+      rooms: [{ id:"bA_n1", name:"USC 405", topic:"NARCAN Workshop #1", time:"10:30am–12:00pm", capacity:30, isNarcan:true,
+        desc:"Learn how to recognize an opioid overdose and administer NARCAN (naloxone). This 90-minute hands-on training covers the full Block A period." }]
     },
     subSessions: [
       {
         id: "bA_s1", label: "Session I  ·  10:30 – 11:00 AM",
         rooms: [
-          { id:"bA_s1_307", name:"USC 307",       topic:"Workshop #1", time:"10:30–11:00am", capacity:89  },
-          { id:"bA_s1_310", name:"USC 310",       topic:"Workshop #2", time:"10:30–11:00am", capacity:60  },
-          { id:"bA_s1_403", name:"USC 403",       topic:"Workshop #3", time:"10:30–11:00am", capacity:50  },
-          { id:"bA_s1_aud", name:"USC Auditorium",topic:"Workshop #4", time:"10:30–11:00am", capacity:100 }
+          { id:"bA_s1_307", name:"USC 307", topic:"Workshop #1", time:"10:30–11:00am", capacity:89,
+            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
+          { id:"bA_s1_310", name:"USC 310", topic:"Workshop #2", time:"10:30–11:00am", capacity:60,
+            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
+          { id:"bA_s1_403", name:"USC 403", topic:"Workshop #3", time:"10:30–11:00am", capacity:50,
+            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
+          { id:"bA_s1_aud", name:"USC Auditorium", topic:"Workshop #4", time:"10:30–11:00am", capacity:100,
+            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
         ]
       },
       {
         id: "bA_s2", label: "Session II  ·  11:10 AM – 12:00 PM",
         rooms: [
-          { id:"bA_s2_307", name:"USC 307",       topic:"Workshop #1", time:"11:10am–12:00pm", capacity:89  },
-          { id:"bA_s2_310", name:"USC 310",       topic:"Workshop #2", time:"11:10am–12:00pm", capacity:60  },
-          { id:"bA_s2_403", name:"USC 403",       topic:"Workshop #3", time:"11:10am–12:00pm", capacity:50  },
-          { id:"bA_s2_aud", name:"USC Auditorium",topic:"Workshop #4", time:"11:10am–12:00pm", capacity:100 }
+          { id:"bA_s2_307", name:"USC 307", topic:"Workshop #1", time:"11:10am–12:00pm", capacity:89,
+            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
+          { id:"bA_s2_310", name:"USC 310", topic:"Workshop #2", time:"11:10am–12:00pm", capacity:60,
+            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
+          { id:"bA_s2_403", name:"USC 403", topic:"Workshop #3", time:"11:10am–12:00pm", capacity:50,
+            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
+          { id:"bA_s2_aud", name:"USC Auditorium", topic:"Workshop #4", time:"11:10am–12:00pm", capacity:100,
+            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
         ]
       }
     ]
@@ -422,25 +484,34 @@ const BLOCKS = [
       id: "bB_narcan",
       label: "NARCAN Workshop #2  ·  1:15 – 2:40 PM",
       sublabel: "USC 405 — spans this entire block; covers Sessions III & IV",
-      rooms: [{ id:"bB_n1", name:"USC 405", topic:"NARCAN Workshop #2", time:"1:15–2:40pm", capacity:30, isNarcan:true }]
+      rooms: [{ id:"bB_n1", name:"USC 405", topic:"NARCAN Workshop #2", time:"1:15–2:40pm", capacity:30, isNarcan:true,
+        desc:"Learn how to recognize an opioid overdose and administer NARCAN (naloxone). This 90-minute hands-on training covers the full Block B period." }]
     },
     subSessions: [
       {
         id: "bB_s3", label: "Session III  ·  1:15 – 2:00 PM",
         rooms: [
-          { id:"bB_s3_307", name:"USC 307",       topic:"Workshop #1", time:"1:15–2:00pm", capacity:89  },
-          { id:"bB_s3_310", name:"USC 310",       topic:"Workshop #2", time:"1:15–2:00pm", capacity:60  },
-          { id:"bB_s3_403", name:"USC 403",       topic:"Workshop #3", time:"1:15–2:00pm", capacity:50  },
-          { id:"bB_s3_aud", name:"USC Auditorium",topic:"Workshop #4", time:"1:15–2:00pm", capacity:100 }
+          { id:"bB_s3_307", name:"USC 307", topic:"Workshop #1", time:"1:15–2:00pm", capacity:89,
+            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
+          { id:"bB_s3_310", name:"USC 310", topic:"Workshop #2", time:"1:15–2:00pm", capacity:60,
+            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
+          { id:"bB_s3_403", name:"USC 403", topic:"Workshop #3", time:"1:15–2:00pm", capacity:50,
+            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
+          { id:"bB_s3_aud", name:"USC Auditorium", topic:"Workshop #4", time:"1:15–2:00pm", capacity:100,
+            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
         ]
       },
       {
         id: "bB_s4", label: "Session IV  ·  2:10 – 2:40 PM",
         rooms: [
-          { id:"bB_s4_307", name:"USC 307",       topic:"Workshop #1", time:"2:10–2:40pm", capacity:89  },
-          { id:"bB_s4_310", name:"USC 310",       topic:"Workshop #2", time:"2:10–2:40pm", capacity:60  },
-          { id:"bB_s4_403", name:"USC 403",       topic:"Workshop #3", time:"2:10–2:40pm", capacity:50  },
-          { id:"bB_s4_aud", name:"USC Auditorium",topic:"Workshop #4", time:"2:10–2:40pm", capacity:100 }
+          { id:"bB_s4_307", name:"USC 307", topic:"Workshop #1", time:"2:10–2:40pm", capacity:89,
+            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
+          { id:"bB_s4_310", name:"USC 310", topic:"Workshop #2", time:"2:10–2:40pm", capacity:60,
+            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
+          { id:"bB_s4_403", name:"USC 403", topic:"Workshop #3", time:"2:10–2:40pm", capacity:50,
+            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
+          { id:"bB_s4_aud", name:"USC Auditorium", topic:"Workshop #4", time:"2:10–2:40pm", capacity:100,
+            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
         ]
       }
     ]
@@ -454,25 +525,34 @@ const BLOCKS = [
       id: "bC_narcan",
       label: "NARCAN Workshop #3  ·  3:30 – 5:00 PM",
       sublabel: "USC 405 — spans this entire block; covers Sessions V & Direct Service",
-      rooms: [{ id:"bC_n1", name:"USC 405", topic:"NARCAN Workshop #3", time:"3:30–5:00pm", capacity:30, isNarcan:true }]
+      rooms: [{ id:"bC_n1", name:"USC 405", topic:"NARCAN Workshop #3", time:"3:30–5:00pm", capacity:30, isNarcan:true,
+        desc:"Learn how to recognize an opioid overdose and administer NARCAN (naloxone). This 90-minute hands-on training covers the full Block C period." }]
     },
     subSessions: [
       {
         id: "bC_s5", label: "Session V  ·  3:30 – 4:00 PM",
         rooms: [
-          { id:"bC_s5_307", name:"USC 307",       topic:"Workshop #1",      time:"3:30–4:00pm", capacity:89  },
-          { id:"bC_s5_310", name:"USC 310",       topic:"Workshop #2",      time:"3:30–4:00pm", capacity:60  },
-          { id:"bC_s5_403", name:"USC 403",       topic:"Workshop #3",      time:"3:30–4:00pm", capacity:50  },
-          { id:"bC_s5_aud", name:"USC Auditorium",topic:"Workshop #4",      time:"3:30–4:00pm", capacity:100 }
+          { id:"bC_s5_307", name:"USC 307", topic:"Workshop #1", time:"3:30–4:00pm", capacity:89,
+            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
+          { id:"bC_s5_310", name:"USC 310", topic:"Workshop #2", time:"3:30–4:00pm", capacity:60,
+            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
+          { id:"bC_s5_403", name:"USC 403", topic:"Workshop #3", time:"3:30–4:00pm", capacity:50,
+            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
+          { id:"bC_s5_aud", name:"USC Auditorium", topic:"Workshop #4", time:"3:30–4:00pm", capacity:100,
+            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
         ]
       },
       {
         id: "bC_s6", label: "Direct Service Activity  ·  4:10 – 5:00 PM",
         rooms: [
-          { id:"bC_s6_307", name:"USC 307",       topic:"Direct Service #1", time:"4:10–5:00pm", capacity:89  },
-          { id:"bC_s6_310", name:"USC 310",       topic:"Direct Service #2", time:"4:10–5:00pm", capacity:60  },
-          { id:"bC_s6_403", name:"USC 403",       topic:"Direct Service #3", time:"4:10–5:00pm", capacity:50  },
-          { id:"bC_s6_aud", name:"USC Auditorium",topic:"Direct Service #4", time:"4:10–5:00pm", capacity:100 }
+          { id:"bC_s6_307", name:"USC 307", topic:"Direct Service #1", time:"4:10–5:00pm", capacity:89,
+            desc:"[Placeholder] Add a brief description for Direct Service #1 here. What will attendees learn or do?" },
+          { id:"bC_s6_310", name:"USC 310", topic:"Direct Service #2", time:"4:10–5:00pm", capacity:60,
+            desc:"[Placeholder] Add a brief description for Direct Service #2 here. What will attendees learn or do?" },
+          { id:"bC_s6_403", name:"USC 403", topic:"Direct Service #3", time:"4:10–5:00pm", capacity:50,
+            desc:"[Placeholder] Add a brief description for Direct Service #3 here. What will attendees learn or do?" },
+          { id:"bC_s6_aud", name:"USC Auditorium", topic:"Direct Service #4", time:"4:10–5:00pm", capacity:100,
+            desc:"[Placeholder] Add a brief description for Direct Service #4 here. What will attendees learn or do?" }
         ]
       }
     ]
@@ -531,8 +611,82 @@ function ownerBlock(sessionId) {
   return null;
 }
 
+// ── Tooltip ───────────────────────────────────────────────────
+const _tooltip = {
+  el:    null,
+  title: null,
+  desc:  null,
+  hideTimer: null,
+  init() {
+    this.el    = document.getElementById('tooltipBubble');
+    this.title = document.getElementById('tooltipTitle');
+    this.desc  = document.getElementById('tooltipDesc');
+  },
+  show(anchorEl, title, desc) {
+    clearTimeout(this.hideTimer);
+    this.title.textContent = title;
+    this.desc.textContent  = desc;
+    this.el.classList.add('visible');
+    this.position(anchorEl);
+  },
+  hide() {
+    this.hideTimer = setTimeout(() => {
+      this.el.classList.remove('visible');
+    }, 120);
+  },
+  position(anchorEl) {
+    const r   = anchorEl.getBoundingClientRect();
+    const tw  = this.el.offsetWidth  || 260;
+    const th  = this.el.offsetHeight || 80;
+    const vw  = window.innerWidth;
+    const vh  = window.innerHeight;
+    const gap = 8;
+    let left  = r.right + gap;
+    let top   = r.top;
+    // Flip left if overflows right edge
+    if (left + tw > vw - 8) left = r.left - tw - gap;
+    // Clamp vertical
+    if (top + th > vh - 8) top = vh - th - 8;
+    if (top < 8) top = 8;
+    this.el.style.left = left + 'px';
+    this.el.style.top  = top  + 'px';
+  }
+};
+
+function attachTooltip(el, title, desc) {
+  const isTouchDevice = () => window.matchMedia('(hover: none)').matches;
+
+  // Desktop: hover
+  el.addEventListener('mouseenter', e => {
+    if (!isTouchDevice()) {
+      e.stopPropagation();
+      _tooltip.show(el, title, desc);
+    }
+  });
+  el.addEventListener('mouseleave', e => {
+    if (!isTouchDevice()) _tooltip.hide();
+  });
+
+  // Mobile: tap toggles
+  el.addEventListener('click', e => {
+    e.stopPropagation(); // don't trigger card select
+    if (isTouchDevice() || true) { // also allow click on desktop
+      if (_tooltip.el.classList.contains('visible') &&
+          _tooltip.title.textContent === title) {
+        _tooltip.hide();
+      } else {
+        _tooltip.show(el, title, desc);
+      }
+    }
+  });
+}
+
+// Hide tooltip when clicking elsewhere
+document.addEventListener('click', () => _tooltip.hide());
+
 // ── Init ───────────────────────────────────────────────────────
 function init() {
+  _tooltip.init();
   renderProgressDots();
   renderBlocks();
   updateProgress();
@@ -616,6 +770,7 @@ function buildRoomCard(blockId, sessionId, room) {
 
   card.innerHTML = `
     ${room.isNarcan ? '<div class="narcan-badge">NARCAN</div>' : ''}
+    <div class="room-info-icon" data-room-id="${room.id}">i</div>
     <div class="room-name">${room.name}</div>
     <div class="room-topic">${room.topic}</div>
     <div class="room-meta">
@@ -624,6 +779,12 @@ function buildRoomCard(blockId, sessionId, room) {
       <span class="capacity-text" id="cap_${room.id}">${room.capacity - enrolled} left</span>
     </div>
   `;
+
+  // Attach tooltip to the info icon
+  const desc = room.desc || 'No description available yet.';
+  const infoIcon = card.querySelector('.room-info-icon');
+  if (infoIcon) attachTooltip(infoIcon, room.topic, desc);
+
   return card;
 }
 
@@ -791,9 +952,20 @@ function updateProgress() {
     if (!dot) return;
     dot.classList.remove('done','skipped','active');
     const sel = selections[id];
-    if (sel === 'SKIPPED') { dot.classList.add('skipped'); done++; }
-    else if (sel)          { dot.classList.add('done');    done++; }
-    else                   { dot.classList.add('active'); }
+
+    // A NARCAN slot that belongs to a *different* block than the chosen one
+    // is locked/irrelevant — count it as done so it doesn't block progress.
+    const isLockedNarcan = (() => {
+      if (!chosenNarcanBlock) return false;
+      for (const block of BLOCKS) {
+        if (block.narcanSession.id === id && block.id !== chosenNarcanBlock) return true;
+      }
+      return false;
+    })();
+
+    if (sel === 'SKIPPED' || isLockedNarcan) { dot.classList.add('skipped'); done++; }
+    else if (sel)                             { dot.classList.add('done');    done++; }
+    else                                      { dot.classList.add('active'); }
   });
   document.getElementById('progressCount').textContent = done;
 }
@@ -853,16 +1025,40 @@ function handleSiteChange() {
 
 // ── Validation ─────────────────────────────────────────────────
 function validateForm() {
-  const siteVal  = document.getElementById('siteId').value;
-  const siteOk   = siteVal && (siteVal !== 'other' || document.getElementById('siteOther').value.trim());
-  const info   = ['fname','lname','email'].every(id => document.getElementById(id).value.trim()) && siteOk;
-  const allDone= ALL_SESSION_IDS.every(id => !!selections[id]);
+  const siteVal = document.getElementById('siteId').value;
+  const siteOk  = siteVal && (siteVal !== 'other' || document.getElementById('siteOther').value.trim());
+  const info    = ['fname','lname','email'].every(id => document.getElementById(id).value.trim()) && siteOk;
+
+  // Build the list of sessions that actually need a response:
+  // - If a NARCAN block is chosen: require that NARCAN selection + the
+  //   sub-sessions of the OTHER two blocks (the chosen block's sub-sessions
+  //   are auto-SKIPPED and don't need a manual pick). The other two NARCAN
+  //   slots are locked and should NOT be required.
+  // - If no NARCAN chosen: require all sub-sessions across all blocks
+  //   (NARCAN slots are optional / not required).
+  const required = [];
+  BLOCKS.forEach(block => {
+    if (chosenNarcanBlock === block.id) {
+      // This block: require the NARCAN selection itself
+      required.push(block.narcanSession.id);
+      // Sub-sessions are auto-SKIPPED — don't require them
+    } else if (chosenNarcanBlock !== null) {
+      // Another block has NARCAN — this block's NARCAN is locked, skip it.
+      // Require the sub-sessions of this block instead.
+      block.subSessions.forEach(ss => required.push(ss.id));
+    } else {
+      // No NARCAN chosen yet — require all sub-sessions (not NARCAN slots)
+      block.subSessions.forEach(ss => required.push(ss.id));
+    }
+  });
+
+  const allDone = required.every(id => !!selections[id]);
   document.getElementById('submitBtn').disabled = !(info && allDone);
 }
 
 // ── Submit ─────────────────────────────────────────────────────
 // !! REPLACE THIS URL with your deployed Google Apps Script Web App URL !!
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmD8JtI6p3msZQtYT5YZgvSGXRcWay8w-xQUipqNp7CZfUak9EA3iTPiME1wEu8UieNA/exec';
+const GOOGLE_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
 function submitForm() {
   const siteVal  = document.getElementById('siteId').value;
