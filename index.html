@@ -1058,13 +1058,25 @@ function validateForm() {
 
 // ── Submit ─────────────────────────────────────────────────────
 // !! REPLACE THIS URL with your deployed Google Apps Script Web App URL !!
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmD8JtI6p3msZQtYT5YZgvSGXRcWay8w-xQUipqNp7CZfUak9EA3iTPiME1wEu8UieNA/exec';
+const GOOGLE_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
 function submitForm() {
   const siteVal  = document.getElementById('siteId').value;
   const siteOk   = siteVal && (siteVal !== 'other' || document.getElementById('siteOther').value.trim());
   const info = ['fname','lname','email'].every(id => document.getElementById(id).value.trim()) && siteOk;
-  if (!info || !ALL_SESSION_IDS.every(id => !!selections[id])) {
+
+  // Use the same smart required-session logic as validateForm
+  const required = [];
+  BLOCKS.forEach(block => {
+    if (chosenNarcanBlock === block.id) {
+      required.push(block.narcanSession.id);
+    } else {
+      block.subSessions.forEach(ss => required.push(ss.id));
+    }
+  });
+  const allDone = required.every(id => !!selections[id]);
+
+  if (!info || !allDone) {
     const err = document.getElementById('formError');
     err.classList.add('visible');
     setTimeout(() => err.classList.remove('visible'), 4000);
@@ -1089,37 +1101,43 @@ function submitForm() {
     ? ('Other: ' + (document.getElementById('siteOther').value.trim()))
     : (siteEl.options[siteEl.selectedIndex]?.text || '');
 
-  // Collect session selections as human-readable strings
-  const sessionData = {};
+  // Build Selection 1–5: the sessions the user actually had to choose
+  // (NARCAN block counts as one selection; its covered sub-sessions are skipped)
+  const selectionSlots = [];
   BLOCKS.forEach((block, bi) => {
     if (chosenNarcanBlock === block.id) {
+      // NARCAN choice fills one slot
       const nSel  = selections[block.narcanSession.id];
       const nRoom = block.narcanSession.rooms.find(r => r.id === nSel);
-      sessionData[`Block ${bi+1} NARCAN`] = nRoom ? `${nRoom.name} — ${nRoom.topic}` : '';
-      block.subSessions.forEach(ss => {
-        sessionData[ss.label.split('·')[0].trim()] = 'Covered by NARCAN';
-      });
+      selectionSlots.push(`NARCAN Workshop (Block ${bi+1}) — ${nRoom ? nRoom.name : 'USC 405'}`);
     } else {
+      // Two sub-session choices for this block
       block.subSessions.forEach(ss => {
         const rid  = selections[ss.id];
         const room = rid && rid !== 'SKIPPED' ? ss.rooms.find(r => r.id === rid) : null;
-        sessionData[ss.label.split('·')[0].trim()] = room ? `${room.name} — ${room.topic}` : '—';
+        const sessionLabel = ss.label.split('·')[0].trim();
+        selectionSlots.push(room ? `${sessionLabel} — ${room.name} (${room.topic})` : '—');
       });
     }
   });
 
+  // Pad to exactly 5 slots in case of edge cases
+  while (selectionSlots.length < 5) selectionSlots.push('');
+
   const payload = {
     timestamp:   new Date().toISOString(),
-    firstName:   fname,
-    lastName:    lname,
+    name:        `${fname} ${lname}`,
     email:       email,
     siteId:      siteLabel,
-    narcanBlock: chosenNarcanBlock || 'none',
-    ...sessionData
+    selection1:  selectionSlots[0] || '',
+    selection2:  selectionSlots[1] || '',
+    selection3:  selectionSlots[2] || '',
+    selection4:  selectionSlots[3] || '',
+    selection5:  selectionSlots[4] || ''
   };
 
   // ── POST to Google Apps Script (fire-and-forget) ────────────
-  if (GOOGLE_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
+  if (GOOGLE_SCRIPT_URL !== 'https://script.google.com/macros/library/d/1BtWhV9iv9cc0kcFvlNNOV45-GhE7Ph5jq03gw4TPU0kBbpQKgNoW30PW/3') {
     fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
       mode:   'no-cors',
