@@ -272,7 +272,136 @@
   .conf-item .label { color: var(--muted); }
   .conf-item .value { color: var(--text); font-weight: 500; text-align: right; }
 
+  /* ── Confirmation Timeline ── */
+  .ctl-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    position: relative; margin-bottom: 0;
+  }
+  .ctl-item:not(:last-child) .ctl-line {
+    position: absolute; left: 17px; top: 24px; bottom: -1px;
+    width: 2px; background: var(--border);
+  }
+  .ctl-left {
+    display: flex; flex-direction: column; align-items: center;
+    flex-shrink: 0; padding-top: 8px; width: 36px;
+  }
+  .ctl-dot {
+    width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; z-index: 1;
+  }
+  .ctl-dot.fixed   { background: var(--surface2); border: 2px solid var(--muted); }
+  .ctl-dot.pick    { background: var(--accent);   border: 2px solid var(--accent); }
+  .ctl-dot.narcan  { background: var(--narcan);   border: 2px solid var(--narcan); }
+  .ctl-dot.lunch   { background: var(--success);  border: 2px solid var(--success); }
+  .ctl-dot.trans   { background: var(--bg);       border: 2px solid var(--border); }
+  .ctl-body { padding: 5px 0 22px; flex: 1; }
+  .ctl-time {
+    font-size: 11px; color: var(--muted); font-weight: 500;
+    margin-bottom: 2px; letter-spacing: 0.04em;
+  }
+  .ctl-title {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    color: var(--text); line-height: 1.3; margin-bottom: 3px;
+  }
+  .ctl-detail {
+    font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.5;
+  }
+  .ctl-pick-card {
+    margin-top: 8px; background: var(--surface2);
+    border: 1px solid var(--border); border-radius: 10px;
+    padding: 12px 14px;
+  }
+  .ctl-pick-card.narcan-pick {
+    border-color: rgba(0,131,100,0.4); background: rgba(0,131,100,0.08);
+  }
+  .ctl-pick-label {
+    font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--muted); margin-bottom: 4px;
+  }
+  .ctl-pick-label.narcan-label { color: #6ecfb8; }
+  .ctl-pick-room {
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    color: var(--text); margin-bottom: 2px;
+  }
+  .ctl-pick-topic { font-size: 12px; color: var(--muted); font-weight: 300; }
 
+
+
+  /* ── Day Timeline ── */
+  .day-timeline {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px 28px; margin-bottom: 28px;
+    animation: fadeDown 0.7s 0.05s ease both;
+  }
+  .timeline-title {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent);
+    margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+  }
+  .timeline-title::before {
+    content: ''; display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--accent);
+  }
+  .timeline-items { display: flex; flex-direction: column; gap: 0; }
+  .tl-item {
+    display: flex; align-items: flex-start; gap: 16px; position: relative;
+  }
+  .tl-item:not(:last-child)::after {
+    content: ''; position: absolute; left: 55px; top: 28px;
+    width: 2px; bottom: -1px;
+    background: var(--border);
+  }
+  .tl-time {
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    color: var(--muted); white-space: nowrap; width: 80px;
+    padding-top: 10px; text-align: right; flex-shrink: 0;
+  }
+  .tl-dot-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    flex-shrink: 0; padding-top: 10px; position: relative; z-index: 1;
+  }
+  .tl-dot {
+    width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0;
+    border: 2px solid var(--border); background: var(--bg);
+  }
+  .tl-dot.accent  { border-color: var(--accent);  background: var(--accent); }
+  .tl-dot.green   { border-color: var(--success);  background: var(--success); }
+  .tl-dot.gold    { border-color: var(--accent);  background: transparent; }
+  .tl-dot.muted   { border-color: var(--muted);   background: transparent; }
+  .tl-dot.narcan  { border-color: var(--narcan);  background: var(--narcan); }
+  .tl-content { padding: 4px 0 20px; flex: 1; }
+  .tl-label {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+    color: var(--text); margin-bottom: 3px; line-height: 1.3;
+  }
+  .tl-sub { font-size: 12px; color: var(--muted); font-weight: 300; line-height: 1.5; }
+  .tl-tag {
+    display: inline-block; font-size: 10px; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 2px 8px; border-radius: 100px; margin-bottom: 4px;
+  }
+  .tl-tag.selectable {
+    background: rgba(255,199,44,0.12); border: 1px solid rgba(255,199,44,0.35);
+    color: var(--accent);
+  }
+  .tl-tag.narcan-tag {
+    background: rgba(0,131,100,0.12); border: 1px solid rgba(0,131,100,0.4);
+    color: #6ecfb8;
+  }
+  .tl-tag.fixed-tag {
+    background: rgba(138,179,200,0.1); border: 1px solid rgba(138,179,200,0.25);
+    color: var(--muted);
+  }
+  .tl-sessions {
+    display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px;
+  }
+  .tl-session-pill {
+    font-size: 11px; color: var(--muted); font-weight: 400;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 9px; line-height: 1.4;
+  }
+  @media (max-width: 540px) {
+    .tl-time { width: 60px; font-size: 10px; }
+  }
   /* ── Tooltip ── */
   .tooltip-bubble {
     position: fixed; z-index: 9999;
@@ -401,13 +530,38 @@
 
   <!-- Success Screen -->
   <div id="success-screen">
+
+    <!-- Hero -->
     <div class="success-icon">✓</div>
     <h2>You're Registered!</h2>
-    <p>Your schedule has been saved. Check in at your first session room by <strong>10:25 AM</strong>.</p>
-    <div class="confirmation-box">
-      <div class="conf-title">Your Confirmed Schedule</div>
+    <p>Your schedule is confirmed. Screenshot or save this page for your records.</p>
+
+    <!-- Registrant info bar -->
+    <div id="confirmInfoBar" style="
+      display:inline-flex; gap:24px; flex-wrap:wrap; justify-content:center;
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:12px; padding:14px 24px; margin-bottom:32px;
+      font-size:13px; color:var(--muted);
+    "></div>
+
+    <!-- Full day timeline -->
+    <div style="max-width:620px; margin:0 auto; text-align:left;">
+      <div style="
+        font-family:'Syne',sans-serif; font-size:11px; font-weight:700;
+        letter-spacing:0.18em; text-transform:uppercase; color:var(--accent);
+        margin-bottom:20px; display:flex; align-items:center; gap:8px;
+      ">
+        <span style="width:6px;height:6px;border-radius:50%;background:var(--accent);display:inline-block;"></span>
+        Your Full Day Schedule
+      </div>
       <div id="confirmRows"></div>
     </div>
+
+    <!-- Screenshot hint -->
+    <p style="margin-top:28px; font-size:12px; color:var(--muted);">
+      📸 Screenshot this page to save your schedule
+    </p>
+
   </div>
 
 </div>
@@ -1058,7 +1212,7 @@ function validateForm() {
 
 // ── Submit ─────────────────────────────────────────────────────
 // !! REPLACE THIS URL with your deployed Google Apps Script Web App URL !!
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzg10wU_CwSTGhsJnhcJDkR59qQbCBuoEUdYmsB66FX37HOhElqWyfpLQSBUE4wkoRCmQ/exec';
+const GOOGLE_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
 function submitForm() {
   const siteVal  = document.getElementById('siteId').value;
@@ -1125,7 +1279,6 @@ function submitForm() {
   while (selectionSlots.length < 5) selectionSlots.push('');
 
   const payload = {
-    timestamp:   new Date().toISOString(),
     name:        `${fname} ${lname}`,
     email:       email,
     siteId:      siteLabel,
@@ -1137,7 +1290,7 @@ function submitForm() {
   };
 
   // ── POST to Google Apps Script (fire-and-forget) ────────────
-  if (GOOGLE_SCRIPT_URL !== 'https://script.google.com/macros/library/d/1BtWhV9iv9cc0kcFvlNNOV45-GhE7Ph5jq03gw4TPU0kBbpQKgNoW30PW/3') {
+  if (GOOGLE_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbzg10wU_CwSTGhsJnhcJDkR59qQbCBuoEUdYmsB66FX37HOhElqWyfpLQSBUE4wkoRCmQ/exec') {
     fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
       mode:   'no-cors',
@@ -1160,42 +1313,128 @@ function submitForm() {
 }
 
 function buildConfirmation() {
-  const fname  = document.getElementById('fname').value.trim();
-  const lname  = document.getElementById('lname').value.trim();
-  const siteEl = document.getElementById('siteId');
-  const siteVal = siteEl.value;
+  const fname    = document.getElementById('fname').value.trim();
+  const lname    = document.getElementById('lname').value.trim();
+  const siteEl   = document.getElementById('siteId');
+  const siteVal  = siteEl.value;
   const siteLabel = siteVal === 'other'
     ? ('Other: ' + (document.getElementById('siteOther').value.trim()))
     : (siteEl.options[siteEl.selectedIndex]?.text || '');
-  const rows   = document.getElementById('confirmRows');
+
+  // ── Info bar ───────────────────────────────────────────────
+  const infoBar = document.getElementById('confirmInfoBar');
+  if (infoBar) {
+    infoBar.innerHTML = `
+      <span><strong style="color:var(--text)">${fname} ${lname}</strong></span>
+      <span style="color:var(--border)">|</span>
+      <span>${siteLabel}</span>
+      <span style="color:var(--border)">|</span>
+      <span>📅 Check-in by 9:30 AM · Funger 108</span>
+    `;
+  }
+
+  // ── Timeline ───────────────────────────────────────────────
+  const rows = document.getElementById('confirmRows');
   rows.innerHTML = '';
 
-  const add = (label, value, muted) => {
-    const d = document.createElement('div'); d.className = 'conf-item';
-    d.innerHTML = `<span class="label">${label}</span><span class="value" style="${muted ? 'color:var(--muted);font-style:italic;font-weight:400' : ''}">${value}</span>`;
-    rows.appendChild(d);
-  };
+  // Helper: add a fixed (non-selectable) timeline item
+  function addFixed(time, title, detail, dotClass) {
+    const el = document.createElement('div');
+    el.className = 'ctl-item';
+    el.innerHTML = `
+      <div class="ctl-left">
+        <div class="ctl-dot ${dotClass || 'fixed'}"></div>
+        <div class="ctl-line"></div>
+      </div>
+      <div class="ctl-body">
+        <div class="ctl-time">${time}</div>
+        <div class="ctl-title">${title}</div>
+        ${detail ? `<div class="ctl-detail">${detail}</div>` : ''}
+      </div>
+    `;
+    rows.appendChild(el);
+  }
 
-  add('Name', fname + ' ' + lname);
-  add('Site ID', siteLabel);
+  // Helper: add a user-selected session item
+  function addPick(time, blockLabel, sessionLabel, room, topic, isNarcan) {
+    const el = document.createElement('div');
+    el.className = 'ctl-item';
+    el.innerHTML = `
+      <div class="ctl-left">
+        <div class="ctl-dot ${isNarcan ? 'narcan' : 'pick'}"></div>
+        <div class="ctl-line"></div>
+      </div>
+      <div class="ctl-body">
+        <div class="ctl-time">${time}</div>
+        <div class="ctl-title">${blockLabel}</div>
+        <div class="ctl-pick-card ${isNarcan ? 'narcan-pick' : ''}">
+          <div class="ctl-pick-label ${isNarcan ? 'narcan-label' : ''}">${sessionLabel}</div>
+          <div class="ctl-pick-room">${room}</div>
+          <div class="ctl-pick-topic">${topic}</div>
+        </div>
+      </div>
+    `;
+    rows.appendChild(el);
+  }
 
-  BLOCKS.forEach((block, bi) => {
-    const nSel = selections[block.narcanSession.id];
+  // ── Build the full day ─────────────────────────────────────
+  addFixed('9:30 AM', 'Check-In', 'Funger 108 · 1–2 tables outside auditorium', 'fixed');
+  addFixed('9:45 AM', 'Opening Session', 'Funger 108 · 9:45 – 10:15 AM', 'fixed');
+  addFixed('10:15 AM', 'Transition to first workshop', null, 'trans');
 
-    if (chosenNarcanBlock === block.id) {
-      const nRoom = block.narcanSession.rooms.find(r => r.id === nSel);
-      add(`Block ${bi+1} — NARCAN Workshop`, nRoom ? `${nRoom.name} · ${nRoom.topic}` : '');
-      block.subSessions.forEach(ss => {
-        add(ss.label.split('·')[0].trim(), 'Covered by NARCAN', true);
-      });
-    } else {
-      block.subSessions.forEach(ss => {
-        const rid  = selections[ss.id];
-        const room = rid && rid !== 'SKIPPED' ? ss.rooms.find(r => r.id === rid) : null;
-        add(`${ss.label.split('·')[0].trim()}`, room ? `${room.name} · ${room.topic}` : '—');
-      });
-    }
-  });
+  // Block A
+  if (chosenNarcanBlock === BLOCKS[0].id) {
+    const nSel  = selections[BLOCKS[0].narcanSession.id];
+    const nRoom = BLOCKS[0].narcanSession.rooms.find(r => r.id === nSel);
+    addPick('10:30 AM', 'Workshop Block A', 'NARCAN Workshop #1 · Full Block',
+      nRoom ? nRoom.name : 'USC 405', '10:30 AM – 12:00 PM', true);
+  } else {
+    BLOCKS[0].subSessions.forEach(ss => {
+      const rid  = selections[ss.id];
+      const room = rid && rid !== 'SKIPPED' ? ss.rooms.find(r => r.id === rid) : null;
+      const timeStr = ss.id === 'bA_s1' ? '10:30 AM' : '11:10 AM';
+      addPick(timeStr, ss.label.split('·')[0].trim(), 'Your Selection',
+        room ? room.name : '—', room ? room.topic : '', false);
+    });
+  }
+
+  addFixed('12:00 PM', 'Lunch Break', '12:00 – 1:10 PM', 'lunch');
+
+  // Block B
+  if (chosenNarcanBlock === BLOCKS[1].id) {
+    const nSel  = selections[BLOCKS[1].narcanSession.id];
+    const nRoom = BLOCKS[1].narcanSession.rooms.find(r => r.id === nSel);
+    addPick('1:15 PM', 'Workshop Block B', 'NARCAN Workshop #2 · Full Block',
+      nRoom ? nRoom.name : 'USC 405', '1:15 – 2:40 PM', true);
+  } else {
+    BLOCKS[1].subSessions.forEach(ss => {
+      const rid  = selections[ss.id];
+      const room = rid && rid !== 'SKIPPED' ? ss.rooms.find(r => r.id === rid) : null;
+      const timeStr = ss.id === 'bB_s3' ? '1:15 PM' : '2:10 PM';
+      addPick(timeStr, ss.label.split('·')[0].trim(), 'Your Selection',
+        room ? room.name : '—', room ? room.topic : '', false);
+    });
+  }
+
+  addFixed('2:40 PM', 'Transition · Site Leader Breakouts', '2:50 – 3:20 PM', 'trans');
+
+  // Block C
+  if (chosenNarcanBlock === BLOCKS[2].id) {
+    const nSel  = selections[BLOCKS[2].narcanSession.id];
+    const nRoom = BLOCKS[2].narcanSession.rooms.find(r => r.id === nSel);
+    addPick('3:30 PM', 'Workshop Block C', 'NARCAN Workshop #3 · Full Block',
+      nRoom ? nRoom.name : 'USC 405', '3:30 – 5:00 PM', true);
+  } else {
+    BLOCKS[2].subSessions.forEach(ss => {
+      const rid  = selections[ss.id];
+      const room = rid && rid !== 'SKIPPED' ? ss.rooms.find(r => r.id === rid) : null;
+      const timeStr = ss.id === 'bC_s5' ? '3:30 PM' : '4:10 PM';
+      addPick(timeStr, ss.label.split('·')[0].trim(), 'Your Selection',
+        room ? room.name : '—', room ? room.topic : '', false);
+    });
+  }
+
+  addFixed('5:05 PM', 'Closing Session', '5:05 – 5:30 PM · All Rooms', 'fixed');
 }
 
 // ── Dev helper: call resetQuotas() in browser console to wipe test data
