@@ -713,7 +713,7 @@ const BLOCKS = [
   }
 ];
 
-// ── Quota state ────────────────────────────────────────────────
+// ── Seat quotas (persisted in localStorage) ───────────────────
 const enrollments = {};
 function allRooms() {
   const out = [];
@@ -740,7 +740,6 @@ BLOCKS.forEach(b => {
 });
 
 // ── Conflict helpers ───────────────────────────────────────────
-// Is a given sessionId blocked given current state?
 function isSessionBlocked(sessionId) {
   for (const block of BLOCKS) {
     // NARCAN session: blocked if a DIFFERENT block's NARCAN is already chosen
@@ -755,7 +754,7 @@ function isSessionBlocked(sessionId) {
   return false;
 }
 
-// Which block owns a given sub-session?
+
 function ownerBlock(sessionId) {
   for (const block of BLOCKS) {
     for (const ss of block.subSessions) {
@@ -946,7 +945,7 @@ function buildRoomCard(blockId, sessionId, room) {
 function selectRoom(blockId, sessionId, roomId, isNarcan) {
   const prev = selections[sessionId];
 
-  // ── TOGGLE: clicking the already-selected card deselects it ──
+  // Toggle: clicking a selected card deselects it
   if (prev === roomId) {
     delete selections[sessionId];
 
@@ -977,26 +976,25 @@ function selectRoom(blockId, sessionId, roomId, isNarcan) {
   selections[sessionId] = roomId;
 
   if (isNarcan) {
-    // ── Picking NARCAN ──────────────────────────────────────────
+    // Picking NARCAN
     const prevNarcanBlock = chosenNarcanBlock;
     chosenNarcanBlock = blockId;
 
-    // If switching from a different NARCAN block, clean it up first
+    // Clean up previous NARCAN block if switching
     if (prevNarcanBlock && prevNarcanBlock !== blockId) {
       const prevBlock = BLOCKS.find(b => b.id === prevNarcanBlock);
-      // Remove that block's NARCAN selection visually
+  
       const prevNarcanRoom = prevBlock.narcanSession.rooms[0];
       const prevNarcanCard = document.getElementById('room_' + prevNarcanRoom.id);
       if (prevNarcanCard) prevNarcanCard.classList.remove('selected');
       delete selections[prevBlock.narcanSession.id];
-      // Un-skip that block's sub-sessions so they become selectable again
+  
       prevBlock.subSessions.forEach(ss => {
         if (selections[ss.id] === 'SKIPPED') delete selections[ss.id];
       });
     }
 
-    // Force-skip ALL sub-sessions in the chosen NARCAN block,
-    // clearing any prior workshop selections visually
+    // Force-skip sub-sessions in the chosen NARCAN block
     const thisBlock = BLOCKS.find(b => b.id === blockId);
     thisBlock.subSessions.forEach(ss => {
       const prior = selections[ss.id];
@@ -1008,9 +1006,7 @@ function selectRoom(blockId, sessionId, roomId, isNarcan) {
     });
 
   } else {
-    // ── Picking a workshop room ─────────────────────────────────
-    // If NARCAN was active for THIS block, clear it so the user
-    // can switch to workshops freely
+    // Picking a workshop — clear NARCAN for this block if active
     const block = ownerBlock(sessionId);
     if (block && chosenNarcanBlock === block.id) {
       const narcanRoom = block.narcanSession.rooms[0];
@@ -1060,7 +1056,7 @@ function refreshSession(blockId, session) {
     else if (isBlocked)cls += ' blocked';
     card.className = cls;
     card.onclick = null;
-    // Allow click on selected cards (to deselect/toggle) OR on available cards
+
     if (!isFull && (!isBlocked || isSelected)) {
       card.onclick = () => selectRoom(blockId, sessionId, room.id, !!room.isNarcan);
     }
@@ -1183,25 +1179,12 @@ function validateForm() {
   const siteOk  = siteVal && (siteVal !== 'other' || document.getElementById('siteOther').value.trim());
   const info    = ['fname','lname','email'].every(id => document.getElementById(id).value.trim()) && siteOk;
 
-  // Build the list of sessions that actually need a response:
-  // - If a NARCAN block is chosen: require that NARCAN selection + the
-  //   sub-sessions of the OTHER two blocks (the chosen block's sub-sessions
-  //   are auto-SKIPPED and don't need a manual pick). The other two NARCAN
-  //   slots are locked and should NOT be required.
-  // - If no NARCAN chosen: require all sub-sessions across all blocks
-  //   (NARCAN slots are optional / not required).
+  // Only require sessions the user could actually interact with
   const required = [];
   BLOCKS.forEach(block => {
     if (chosenNarcanBlock === block.id) {
-      // This block: require the NARCAN selection itself
       required.push(block.narcanSession.id);
-      // Sub-sessions are auto-SKIPPED — don't require them
-    } else if (chosenNarcanBlock !== null) {
-      // Another block has NARCAN — this block's NARCAN is locked, skip it.
-      // Require the sub-sessions of this block instead.
-      block.subSessions.forEach(ss => required.push(ss.id));
     } else {
-      // No NARCAN chosen yet — require all sub-sessions (not NARCAN slots)
       block.subSessions.forEach(ss => required.push(ss.id));
     }
   });
@@ -1210,16 +1193,73 @@ function validateForm() {
   document.getElementById('submitBtn').disabled = !(info && allDone);
 }
 
+// ── Security ───────────────────────────────────────────────────
+function sanitize(str) {
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+    .replace(/\//g, '&#x2F;')
+    .trim();
+}
+
+function isSafeInput(str) {
+  const dangerous = /<script|javascript:|on\w+\s*=|<iframe|<object|<embed|data:/i;
+  return !dangerous.test(str);
+}
+
+// Rate limiting — 60s cooldown between submissions
+const RATE_LIMIT_MS = 60 * 1000; // 60 seconds between submissions
+
+function isRateLimited() {
+  const last = parseInt(localStorage.getItem('last_submission') || '0');
+  return (Date.now() - last) < RATE_LIMIT_MS;
+}
+
+function recordSubmission() {
+  localStorage.setItem('last_submission', Date.now().toString());
+}
+
+function getRateLimitSecondsLeft() {
+  const last = parseInt(localStorage.getItem('last_submission') || '0');
+  return Math.ceil((RATE_LIMIT_MS - (Date.now() - last)) / 1000);
+}
+
 // ── Submit ─────────────────────────────────────────────────────
 // !! REPLACE THIS URL with your deployed Google Apps Script Web App URL !!
 const GOOGLE_SCRIPT_URL = 'YOUR_APPS_SCRIPT_URL_HERE';
 
 function submitForm() {
+  // ── Rate limit check ─────────────────────────────────────────
+  if (isRateLimited()) {
+    const err = document.getElementById('formError');
+    err.textContent = `Please wait ${getRateLimitSecondsLeft()} seconds before submitting again.`;
+    err.classList.add('visible');
+    setTimeout(() => { err.classList.remove('visible'); err.textContent = 'Please fill in all your information and make a selection for every available session.'; }, 4000);
+    return;
+  }
+
   const siteVal  = document.getElementById('siteId').value;
   const siteOk   = siteVal && (siteVal !== 'other' || document.getElementById('siteOther').value.trim());
   const info = ['fname','lname','email'].every(id => document.getElementById(id).value.trim()) && siteOk;
 
-  // Use the same smart required-session logic as validateForm
+  // ── Input safety check ────────────────────────────────────────
+  const rawInputs = [
+    document.getElementById('fname').value,
+    document.getElementById('lname').value,
+    document.getElementById('email').value,
+    document.getElementById('siteOther')?.value || ''
+  ];
+  if (rawInputs.some(v => !isSafeInput(v))) {
+    const err = document.getElementById('formError');
+    err.textContent = 'One or more fields contain invalid characters. Please check your inputs.';
+    err.classList.add('visible');
+    setTimeout(() => { err.classList.remove('visible'); err.textContent = 'Please fill in all your information and make a selection for every available session.'; }, 4000);
+    return;
+  }
+
   const required = [];
   BLOCKS.forEach(block => {
     if (chosenNarcanBlock === block.id) {
@@ -1232,6 +1272,7 @@ function submitForm() {
 
   if (!info || !allDone) {
     const err = document.getElementById('formError');
+    err.textContent = 'Please fill in all your information and make a selection for every available session.';
     err.classList.add('visible');
     setTimeout(() => err.classList.remove('visible'), 4000);
     return;
@@ -1246,14 +1287,17 @@ function submitForm() {
     }
   });
 
-  // ── Build payload for Google Sheets ────────────────────────
-  const fname    = document.getElementById('fname').value.trim();
-  const lname    = document.getElementById('lname').value.trim();
-  const email    = document.getElementById('email').value.trim();
+  // ── Sanitize and build payload for Google Sheets ───────────
+  const fname    = sanitize(document.getElementById('fname').value);
+  const lname    = sanitize(document.getElementById('lname').value);
+  const email    = sanitize(document.getElementById('email').value);
   const siteEl   = document.getElementById('siteId');
   const siteLabel = siteVal === 'other'
-    ? ('Other: ' + (document.getElementById('siteOther').value.trim()))
-    : (siteEl.options[siteEl.selectedIndex]?.text || '');
+    ? sanitize('Other: ' + (document.getElementById('siteOther').value.trim()))
+    : sanitize(siteEl.options[siteEl.selectedIndex]?.text || '');
+
+  // Record submission time for rate limiting
+  recordSubmission();
 
   // Build Selection 1–5: the sessions the user actually had to choose
   // (NARCAN block counts as one selection; its covered sub-sessions are skipped)
@@ -1301,10 +1345,6 @@ function submitForm() {
     console.warn('Google Sheets URL not set. Data not logged:', payload);
   }
 
-  // ── Qualtrics stub ─────────────────────────────────────────
-  // const Q = Qualtrics.SurveyEngine;
-  // Q.setEmbeddedData('narcan_block', chosenNarcanBlock || 'none');
-  // ALL_SESSION_IDS.forEach(id => Q.setEmbeddedData(id, selections[id] || ''));
 
   buildConfirmation();
   document.getElementById('mainForm').style.display = 'none';
@@ -1437,7 +1477,7 @@ function buildConfirmation() {
   addFixed('5:05 PM', 'Closing Session', '5:05 – 5:30 PM · All Rooms', 'fixed');
 }
 
-// ── Dev helper: call resetQuotas() in browser console to wipe test data
+// Dev: call resetQuotas() in console to wipe test seat counts
 function resetQuotas() {
   allRooms().forEach(r => { enrollments[r.id]=0; localStorage.removeItem('quota_'+r.id); });
   location.reload();
