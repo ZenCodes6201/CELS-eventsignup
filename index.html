@@ -713,8 +713,9 @@ const BLOCKS = [
   }
 ];
 
-// ── Seat quotas (persisted in localStorage) ───────────────────
+// ── Seat quotas (shared via Google Sheets, polled every 30s) ──
 const enrollments = {};
+
 function allRooms() {
   const out = [];
   BLOCKS.forEach(b => {
@@ -723,9 +724,49 @@ function allRooms() {
   });
   return out;
 }
-allRooms().forEach(r => {
-  enrollments[r.id] = parseInt(localStorage.getItem('quota_' + r.id) || '0');
-});
+
+// Initialise all counts to 0
+allRooms().forEach(r => { enrollments[r.id] = 0; });
+
+// Registered emails set — checked client-side before submit
+const registeredEmails = new Set();
+
+// Fetch live counts AND registered emails from Google Sheets
+function fetchCounts() {
+  if (GOOGLE_SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL_HERE') return;
+  fetch(GOOGLE_SCRIPT_URL + '?action=getCounts', { method: 'GET' })
+    .then(r => r.json())
+    .then(data => {
+      if (!data) return;
+      // Update seat counts
+      if (data.counts) {
+        let changed = false;
+        allRooms().forEach(r => {
+          const fresh = data.counts[r.id] || 0;
+          if (fresh !== enrollments[r.id]) {
+            enrollments[r.id] = fresh;
+            changed = true;
+          }
+        });
+        if (changed) refreshAllCards();
+      }
+      // Cache registered emails for duplicate check
+      if (data.emails) {
+        data.emails.forEach(e => registeredEmails.add(e.toLowerCase()));
+      }
+    })
+    .catch(() => {}); // fail silently — form still works offline
+}
+
+// Poll every 30 seconds
+let _pollTimer = null;
+function startPolling() {
+  fetchCounts(); // immediate fetch on load
+  _pollTimer = setInterval(fetchCounts, 30000);
+}
+function stopPolling() {
+  if (_pollTimer) clearInterval(_pollTimer);
+}
 
 // selections map: sessionId → roomId | 'SKIPPED' | undefined
 const selections = {};
@@ -843,6 +884,7 @@ function init() {
   renderProgressDots();
   renderBlocks();
   updateProgress();
+  startPolling();
 }
 
 function renderProgressDots() {
@@ -1232,6 +1274,19 @@ function getRateLimitSecondsLeft() {
 const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCUoAUztqptOl4UqNP1wDhB5GiF7IpMCCN1uFM5oCxFkPRZiUapEJp1wTZkL8IVtmO/exec';
 
 function submitForm() {
+  // ── Duplicate email check ────────────────────────────────────
+  const submittedEmail = document.getElementById('email').value.trim().toLowerCase();
+  if (registeredEmails.has(submittedEmail)) {
+    const err = document.getElementById('formError');
+    err.textContent = 'This email address is already registered. Each person can only sign up once.';
+    err.classList.add('visible');
+    setTimeout(() => {
+      err.classList.remove('visible');
+      err.textContent = 'Please fill in all your information and make a selection for every available session.';
+    }, 5000);
+    return;
+  }
+
   // ── Rate limit check ─────────────────────────────────────────
   if (isRateLimited()) {
     const err = document.getElementById('formError');
@@ -1278,14 +1333,15 @@ function submitForm() {
     return;
   }
 
-  // Increment quotas for real selections only
+  // Optimistically increment local counts for immediate UI feedback.
+  // The authoritative count comes from the sheet on the next poll.
   ALL_SESSION_IDS.forEach(id => {
     const rid = selections[id];
     if (rid && rid !== 'SKIPPED') {
       enrollments[rid] = (enrollments[rid] || 0) + 1;
-      localStorage.setItem('quota_' + rid, enrollments[rid]);
     }
   });
+  stopPolling(); // stop polling after submission — page is done
 
   // ── Sanitize and build payload for Google Sheets ───────────
   const fname    = sanitize(document.getElementById('fname').value);
@@ -1298,6 +1354,8 @@ function submitForm() {
 
   // Record submission time for rate limiting
   recordSubmission();
+  // Add to local duplicate cache so back-button doesn't allow resubmit
+  registeredEmails.add(email.toLowerCase());
 
   // Build Selection 1–5: the sessions the user actually had to choose
   // (NARCAN block counts as one selection; its covered sub-sessions are skipped)
@@ -1322,6 +1380,21 @@ function submitForm() {
   // Pad to exactly 5 slots in case of edge cases
   while (selectionSlots.length < 5) selectionSlots.push('');
 
+  // Also collect raw room IDs for server-side count tracking
+  const roomIdSlots = [];
+  BLOCKS.forEach((block) => {
+    if (chosenNarcanBlock === block.id) {
+      const nSel = selections[block.narcanSession.id];
+      roomIdSlots.push(nSel || '');
+    } else {
+      block.subSessions.forEach(ss => {
+        const rid = selections[ss.id];
+        roomIdSlots.push((rid && rid !== 'SKIPPED') ? rid : '');
+      });
+    }
+  });
+  while (roomIdSlots.length < 5) roomIdSlots.push('');
+
   const payload = {
     name:        `${fname} ${lname}`,
     email:       email,
@@ -1330,14 +1403,19 @@ function submitForm() {
     selection2:  selectionSlots[1] || '',
     selection3:  selectionSlots[2] || '',
     selection4:  selectionSlots[3] || '',
-    selection5:  selectionSlots[4] || ''
+    selection5:  selectionSlots[4] || '',
+    roomId1:     roomIdSlots[0],
+    roomId2:     roomIdSlots[1],
+    roomId3:     roomIdSlots[2],
+    roomId4:     roomIdSlots[3],
+    roomId5:     roomIdSlots[4]
   };
 
-  // ── POST to Google Apps Script (fire-and-forget) ────────────
-  if (GOOGLE_SCRIPT_URL !== 'https://script.google.com/macros/s/AKfycbyCUoAUztqptOl4UqNP1wDhB5GiF7IpMCCN1uFM5oCxFkPRZiUapEJp1wTZkL8IVtmO/exec') {
+  // ── POST to Google Apps Script ──────────────────────────────
+  if (GOOGLE_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE') {
     fetch(GOOGLE_SCRIPT_URL, {
       method: 'POST',
-      mode:   'no-cors',
+      mode:   'no-cors',  // CORS limitation with Apps Script — response still logs
       headers: { 'Content-Type': 'application/json' },
       body:   JSON.stringify(payload)
     }).catch(err => console.warn('Sheet logging failed:', err));
@@ -1477,9 +1555,12 @@ function buildConfirmation() {
   addFixed('5:05 PM', 'Closing Session', '5:05 – 5:30 PM · All Rooms', 'fixed');
 }
 
-// Dev: call resetQuotas() in console to wipe test seat counts
+// Dev: call resetQuotas() in console to reset local seat counts
+// To fully reset, also clear the Counts tab in Google Sheets
 function resetQuotas() {
-  allRooms().forEach(r => { enrollments[r.id]=0; localStorage.removeItem('quota_'+r.id); });
+  allRooms().forEach(r => { enrollments[r.id] = 0; });
+  refreshAllCards();
+  Logger && Logger.log && Logger.log('Local quotas reset');
   location.reload();
 }
 
