@@ -1355,7 +1355,7 @@ function getRateLimitSecondsLeft() {
 
 // ── Submit ─────────────────────────────────────────────────────
 // !! REPLACE THIS URL with your deployed Google Apps Script Web App URL !!
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCUoAUztqptOl4UqNP1wDhB5GiF7IpMCCN1uFM5oCxFkPRZiUapEJp1wTZkL8IVtmO/exec';
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzg10wU_CwSTGhsJnhcJDkR59qQbCBuoEUdYmsB66FX37HOhElqWyfpLQSBUE4wkoRCmQ/exec';
 
 function submitForm() {
   // ── Duplicate email check ────────────────────────────────────
@@ -1510,7 +1510,7 @@ function submitForm() {
   btn.disabled = true;
 
   // ── POST to Google Apps Script ──────────────────────────────
-  const postPromise = (GOOGLE_SCRIPT_URL !== 'YOUR_APPS_SCRIPT_URL_HERE')
+  const postPromise = (GOOGLE_SCRIPT_URL !== 'Yhttps://script.google.com/macros/s/AKfycbzg10wU_CwSTGhsJnhcJDkR59qQbCBuoEUdYmsB66FX37HOhElqWyfpLQSBUE4wkoRCmQ/exec')
     ? fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         mode:   'no-cors',
