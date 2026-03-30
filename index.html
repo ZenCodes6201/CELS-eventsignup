@@ -484,7 +484,7 @@
     </div>
     <div class="tag">Session Registration</div>
     <h1>Choose Your Schedule</h1>
-    <p>Select one room per session. First-come, first-served. Choosing NARCAN in any block automatically locks the other two NARCAN slots and covers that block's concurrent workshops.</p>
+    <p>Select one room per session. First-come, first-served. Choosing NARCAN in any block automatically locks the other two NARCAN slots and covers that block's concurrent workshops. Click on th icon to see a short description of each session.</p>
   </header>
 
   <!-- Path Notice -->
@@ -511,7 +511,7 @@
           <label>Site ID</label>
           <select id="siteId" onchange="handleSiteChange()">
             <option value="">— Select your site —</option>
-            <option value="826dc_noyse">826DC @Noyse</option>
+            <option value="826dc_noyse">826DC @Noyes</option>
             <option value="826dc_awl">826DC: AWL (After-School Writing Lab)</option>
             <option value="awc">A Wider Circle (AWC)</option>
             <option value="anbryce">AnBryce</option>
@@ -639,7 +639,7 @@ const BLOCKS = [
     narcanSession: {
       id: "bA_narcan",
       label: "NARCAN Workshop #1  ·  10:30 AM – 12:00 PM",
-      sublabel: "USC 405 — spans this entire block; covers Sessions I & II",
+      sublabel: "USC 405 — Lead by Dr. Maranda Ward and George Kerr III",
       rooms: [{ id:"bA_n1", name:"NARCAN Workshop #1", topic:"USC 405", time:"10:30am–12:00pm", capacity:30, isNarcan:true,
         desc:"The session begins with a complex and interactive discussion of the reality of drug overdoses in the US, how we contextualize it in DC, and the populations it most impacts. Participants will then learn how and when to safely administer Narcan and be tested on their knowledge. Finally, participants will create their own take-home Narcan kits to utilize in their own communities. They will also assemble at least extra kits for Westminster Empowerment to distribute to the DC community at their Juneteenth event." }]
     },
@@ -647,27 +647,27 @@ const BLOCKS = [
       {
         id: "bA_s1", label: "Session I  ·  10:30 – 11:00 AM",
         rooms: [
-          { id:"bA_s1_307", name:"USC 307", topic:"Workshop #1", time:"10:30–11:00am", capacity:89,
-            desc:"" },
-          { id:"bA_s1_310", name:"USC 310", topic:"Workshop #2", time:"10:30–11:00am", capacity:60,
-            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
-          { id:"bA_s1_403", name:"USC 403", topic:"Workshop #3", time:"10:30–11:00am", capacity:50,
-            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
-          { id:"bA_s1_aud", name:"USC Auditorium", topic:"Workshop #4", time:"10:30–11:00am", capacity:100,
-            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
+          { id:"bA_s1_307", name:"Workshop #1: Community Engagement & Philanthropy (Katy Jones/Horton’s Kids)", topic:"USC 307", time:"10:30–11:00am", capacity:89,
+            desc:"This workshop explores the importance of volunteering, community work, and philanthropy, highlighting both societal impact and personal growth. Participants will review data on volunteer trends and community engagement while learning how service contributes to leadership development, career readiness, and overall well-being. The session will also provide practical strategies for finding meaningful opportunities and balancing service with academic or professional responsibilities. Attendees will leave with actionable steps to get involved and make a lasting impact in their communities." },
+          { id:"bA_s1_310", name:"Workshop #2: Relationship Building While in a Service Provider Role (Miriam's Team) ", topic:"USC 310", time:"10:30–11:00am", capacity:60,
+            desc:"This workshop explores the unique challenges and responsibilities of building authentic relationships while serving in a provider role within communities. Participants will reflect on power dynamics, boundaries, and trust, while learning strategies to foster meaningful, respectful connections rooted in empathy and mutual care. Through discussion and interactive activities, students will gain tools to navigate complex interpersonal dynamics in ways that center community voices and uphold the values of compassion, accountability, and community care." },
+          { id:"bA_s1_403", name:"Workshop #3 Refilling the Cup (Tianna Schneider / AWC + Bella MacPherson / LFFP )", topic:"USC 403", time:"10:30–11:00am", capacity:50,
+            desc:"Students often get involved in service work because they are empaths, but while there is a great deal of focus on the mental health and well-being of those we serve, there is less emphasis on our own mental health while we serve. This session will share research and strategies for implementing self and community care while engaged in service work, maintaining boundaries, and supporting each other to avoid burnout. There will be an interactive discussion component, so attendees should come prepared to share their own setbacks and challenges, as well as ideas for addressing these setbacks and challenges together." },
+          { id:"bA_s1_aud", name:"Workshop #4: Careers in Advocacy in Nonprofits (Kirsten Sloan / American Cancer Society)", topic:"USC Auditorium", time:"10:30–11:00am", capacity:100,
+            desc:"In this session, Kirsten will talk a little bit about her history and career in advocacy work over the last 20 or so years. Then she will advise students on tips and tricks on getting started in the nonprofit sector and take any questions students may have about careers in non-profits or anything related to careers in advocacy." }
         ]
       },
       {
         id: "bA_s2", label: "Session II  ·  11:10 AM – 12:00 PM",
         rooms: [
-          { id:"bA_s2_307", name:"USC 307", topic:"Workshop #1", time:"11:10am–12:00pm", capacity:89,
-            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
-          { id:"bA_s2_310", name:"USC 310", topic:"Workshop #2", time:"11:10am–12:00pm", capacity:60,
-            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
-          { id:"bA_s2_403", name:"USC 403", topic:"Workshop #3", time:"11:10am–12:00pm", capacity:50,
-            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
-          { id:"bA_s2_aud", name:"USC Auditorium", topic:"Workshop #4", time:"11:10am–12:00pm", capacity:100,
-            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
+          { id:"bA_s2_307", name:"Workshop #1: Anti-Racist Training (Samantha Davis/ FreeDC)", topic:"USC 307", time:"11:10am–12:00pm", capacity:89,
+            desc:"In this session, participants will explore how to incorporate anti-racist principles into everyday volunteer work, address systemic inequities within communities, and build skills to engage in thoughtful, justice-driven service. The leader of this workshop will share real-world strategies, lessons from statewide advocacy initiatives, and tools to empower volunteers to become more effective, informed, and compassionate agents of change. " },
+          { id:"bA_s2_310", name:"Workshop #2: DC History (Ruby Leonard/FLOC)", topic:"USC 310", time:"11:10am–12:00pm", capacity:60,
+            desc:"This workshop will cover a brief history of our nation's capital and what it looks like today. From its origins as Chocolate City to the most recent statistics, we will review documents, hear testimony, and discuss what being DC residents means for those we serve. While this will be a starting point for those interested in learning more about the history of our city, attendees are encouraged to continue reading, thinking, and listening about all of our lives here moving forward." },
+          { id:"bA_s2_403", name:"Workshop #3:Trauma-Informed Community Service (Mykala Bledsoe /LFFP & Anissa Tanksley/GW)", topic:"USC 403", time:"11:10am–12:00pm", capacity:50,
+            desc:"The Office of Advocacy and Support will lead a discussion on what trauma-informed services mean when working with youth and adults. As service providers, gaining practical skills in recognizing trauma signs, applying empathetic communication, and managing triggers effectively are crucial. Here, you can learn tools for responding to disclosures of trauma, practicing active listening, and setting healthy boundaries with community members. Critical reflection and active self-care are also key tenets of the practice. This workshop empowers service providers to transform interactions, promote healing for ourselves and those we serve, and strengthen connections—making communities more inclusive and nurturing for everyone." },
+          { id:"bA_s2_aud", name:"Workshop #4:Nashman Grants & Opportunities (Ayman Rayman, Nashman)", topic:"USC Auditorium", time:"11:10am–12:00pm", capacity:100,
+            desc:"This informative workshop introduces participants to grant opportunities available through the civic center, providing insight into the application process and what makes a successful proposal. Attendees will hear from past grant recipients who will share their experiences, challenges, and tips for success. The session will also include a guided brainstorming activity to help participants generate and develop potential project ideas in collaboration with nonprofit partner sites." }
         ]
       }
     ]
@@ -679,36 +679,37 @@ const BLOCKS = [
     animDelay: "0.16s",
     narcanSession: {
       id: "bB_narcan",
-      label: "NARCAN Workshop #2  ·  1:15 – 2:40 PM",
-      sublabel: "USC 405 — spans this entire block; covers Sessions III & IV",
-      rooms: [{ id:"bB_n1", name:"USC 405", topic:"NARCAN Workshop #2", time:"1:15–2:40pm", capacity:30, isNarcan:true,
-        desc:"Learn how to recognize an opioid overdose and administer NARCAN (naloxone). This 90-minute hands-on training covers the full Block B period." }]
+      label: "NARCAN Workshop #2  ·  1:10 – 2:40 PM",
+      sublabel: "USC 405 — Lead by Dr. Maranda Ward and George Kerr III",
+      rooms: [{ id:"bB_n1", name:"NARCAN Workshop #2", topic:"USC 405", time:"1:10–2:40pm", capacity:30, isNarcan:true,
+        desc:"The session begins with a complex and interactive discussion of the reality of drug overdoses in the US, how we contextualize it in DC, and the populations it most impacts. Participants will then learn how and when to safely administer Narcan and be tested on their knowledge. Finally, participants will create their own take-home Narcan kits to utilize in their own communities. They will also assemble at least extra kits for Westminster Empowerment to distribute to the DC community at their Juneteenth event." }]
     },
     subSessions: [
       {
-        id: "bB_s3", label: "Session III  ·  1:15 – 2:00 PM",
+        id: "bB_s3", label: "Session III  ·  1:10 – 2:00 PM",
         rooms: [
-          { id:"bB_s3_307", name:"USC 307", topic:"Workshop #1", time:"1:15–2:00pm", capacity:89,
-            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
-          { id:"bB_s3_310", name:"USC 310", topic:"Workshop #2", time:"1:15–2:00pm", capacity:60,
-            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
-          { id:"bB_s3_403", name:"USC 403", topic:"Workshop #3", time:"1:15–2:00pm", capacity:50,
-            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
-          { id:"bB_s3_aud", name:"USC Auditorium", topic:"Workshop #4", time:"1:15–2:00pm", capacity:100,
-            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
-        ]
+          { id:"bB_s3_307", name:"Workshop #1: Resume Workshop (Paul Binkley/ GW Career Services)", topic:"USC 307", time:"1:10–2:00pm", capacity:89,
+            desc:"This workshop helps participants tell the story of their civic and service experiences into compelling professional narratives for resumes, CVs, graduate school applications, and networking profiles (e.g., LinkedIn, GW Career Connect). Attendees will learn how to translate their experiences in the language of the positions that interest them to effectively navigate the current job market and get around AI Applicant Tracking Systems (ATS)." },
+          { id:"bB_s3_310", name:"Workshop #2:Sowing Seeds of Peace (Mykayla Bledsoe/LFFP)", topic:"USC 310", time:"1:10–2:00pm", capacity:60,
+            desc:"Sowing Seeds of Peace emerged from the barriers to community care and harm reduction, which perpetuates dangerous consequences in substance use and violence prevention spaces. Environmental degradation, like genocide and ecocide we see Indigenous peoples facing today, has long-term impacts on cultural community healing. Planting workshops for different age groups aim to establish a relationship with the Earth and to combat the erasure of Indigenous perspectives, contributing to land-based healing. The workshop will explore themes of cultural resiliency, connection to place, and mutual aid through fostered discussion while completing a hands-on activity to nurture both ourselves and the Earth." },
+          { id:"bB_s3_403", name:"Workshop #3:Undoing Racism Workshop (Dr. Amy Moselhi/ Edgemont School District)", topic:"USC 403", time:"1:10–2:00pm", capacity:40,
+            desc:"Grounded in the PBS documentary Race: The Power of an Illusion, this interactive workshop challenges participants to reconsider commonly held assumptions about race as a biological reality and instead examine it as a social construct shaped by historical and institutional forces. Through guided reflection, small-group dialogue, and a makerspace-style collaborative activity, participants will explore how systems continue to produce inequities and how these dynamics show up in their own environments. Working in small groups, participants will analyze these dynamics through key lenses, including education, housing and wealth, media and perception, policy and criminal justice, and campus or institutional systems. The workshop emphasizes courageous conversations, creating space for honest, sometimes uncomfortable dialogue that moves beyond awareness toward accountability and action. Participants will leave with a deeper understanding of how race operates structurally, as well as practical strategies to engage in meaningful conversations and contribute to more inclusive and equitable communities" },
+          { id:"bB_s3_aud", name:"Workshop #4:ICE Preparedness & Training (GW SAI) ", topic:"USC Auditorium",     time:"1:10–2:00pm", capacity:100,
+            desc:"Join us for an interactive training on how best to respond to ICE interactions during service and beyond. Participants will have a safe space to share their concerns about this threat to their communities and learn tips and tricks for collective action."}
+        ]  
+      
       },
       {
         id: "bB_s4", label: "Session IV  ·  2:10 – 2:40 PM",
         rooms: [
-          { id:"bB_s4_307", name:"USC 307", topic:"Workshop #1", time:"2:10–2:40pm", capacity:89,
-            desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
-          { id:"bB_s4_310", name:"USC 310", topic:"Workshop #2", time:"2:10–2:40pm", capacity:60,
-            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
-          { id:"bB_s4_403", name:"USC 403", topic:"Workshop #3", time:"2:10–2:40pm", capacity:50,
-            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
-          { id:"bB_s4_aud", name:"USC Auditorium", topic:"Workshop #4", time:"2:10–2:40pm", capacity:100,
-            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
+          { id:"bB_s4_307", name:"Workshop #1: Career Pathways in Public Service (Paul Binkley/ GW Career Services) ", topic:"USC 307", time:"2:10–2:40pm", capacity:89,
+            desc:"This workshop introduces participants to a wide range of public service career pathways across government, nonprofit, and the for-profit sectors. Attendees will gain insight into the 'hidden job market', different roles, hiring processes, and entry points. The session also covers strategies for building relevant experience, networking, and aligning personal values with impactful career opportunities." },
+          { id:"bB_s4_310", name:"Workshop #2: Minimizing Distractions During Tutoring (Reading Partners Team)", topic:"Workshop #2", time:"2:10–2:40pm", capacity:60,
+            desc:"While tutoring blocks can feel like they aren’t long enough, sometimes these sessions feel endless because mentees are resistant to focusing on academic content for the duration of the time. Distractions can be caused by many factors—the noise level and activity in the tutoring space, issues at home, embarrassment over not knowing content, and more—but tutors from multiple SMARTDC sites will share strategies for overcoming these disruptions to ensure meaningful learning takes place. " },
+          { id:"bB_s4_403", name:"Workshop #3:Navigating Transitions at Nonprofits (Abigial Sandavol-Soto/Juliette Teutsch/AnBryce) ", topic:"USC 403", time:"2:10–2:40pm", capacity:50,
+            desc:"Staff turnover and budget challenges are unavoidable in nonprofit and service work. When partnering with nonprofits through university programs, how do we navigate change and uncertainty in ways that minimize disruption to the communities we serve? Facilitators of this session will share both failures and successes as they navigated uncertain terrain, equipping attendees with strategies to move forward, ensuring continuity and momentum in community-engaged work. " },
+          { id:"bB_s4_aud", name:"Workshop #4: First Generation Leadership in Service (Lily Myrick)", topic:"USC Auditorium", time:"2:10–2:40pm", capacity:100,
+            desc:"This workshop brings together first-generation college students to share reflections on how their identities shape their experiences with service, leadership, and civic engagement. Panelists will explore the unique challenges and strengths that come with being first-gen, including navigating institutional barriers, fostering community connections, and redefining leadership in spaces that may not always feel accessible." }
         ]
       }
     ]
@@ -721,35 +722,37 @@ const BLOCKS = [
     narcanSession: {
       id: "bC_narcan",
       label: "NARCAN Workshop #3  ·  3:30 – 5:00 PM",
-      sublabel: "USC 405 — spans this entire block; covers Sessions V & Direct Service",
-      rooms: [{ id:"bC_n1", name:"USC 405", topic:"NARCAN Workshop #3", time:"3:30–5:00pm", capacity:30, isNarcan:true,
-        desc:"Learn how to recognize an opioid overdose and administer NARCAN (naloxone). This 90-minute hands-on training covers the full Block C period." }]
+      sublabel: "USC 405 — Lead by Dr. Maranda Ward and George Kerr III",
+      rooms: [{ id:"bC_n1", name:"NARCAN Workshop #3", topic:"USC 405", time:"3:30–5:00pm", capacity:30, isNarcan:true,
+        desc:"The session begins with a complex and interactive discussion of the reality of drug overdoses in the US, how we contextualize it in DC, and the populations it most impacts. Participants will then learn how and when to safely administer Narcan and be tested on their knowledge. Finally, participants will create their own take-home Narcan kits to utilize in their own communities. They will also assemble at least extra kits for Westminster Empowerment to distribute to the DC community at their Juneteenth event." }]
     },
     subSessions: [
       {
         id: "bC_s5", label: "Session V  ·  3:30 – 4:00 PM",
         rooms: [
-          { id:"bC_s5_307", name:"USC 307", topic:"Workshop #1", time:"3:30–4:00pm", capacity:89,
+          { id:"bC_s5_307", name:"USC 307", topic:"Workshop #1 TBD", time:"3:30–4:00pm", capacity:89,
             desc:"[Placeholder] Add a brief description for Workshop #1 here. What will attendees learn or do?" },
-          { id:"bC_s5_310", name:"USC 310", topic:"Workshop #2", time:"3:30–4:00pm", capacity:60,
-            desc:"[Placeholder] Add a brief description for Workshop #2 here. What will attendees learn or do?" },
-          { id:"bC_s5_403", name:"USC 403", topic:"Workshop #3", time:"3:30–4:00pm", capacity:50,
-            desc:"[Placeholder] Add a brief description for Workshop #3 here. What will attendees learn or do?" },
-          { id:"bC_s5_aud", name:"USC Auditorium", topic:"Workshop #4", time:"3:30–4:00pm", capacity:100,
-            desc:"[Placeholder] Add a brief description for Workshop #4 here. What will attendees learn or do?" }
+          { id:"bC_s5_310", name:"Workshop #2: A Wider Circle Program Spotlight (Emily Maher and Ganon Albertson/AWC", topic:"USC 310", time:"3:30–4:00pm", capacity:60,
+            desc:"Program highlight of the AWC cohort's bi-monthly campus clothing drives. We will talk about our history with the drives, all the details that go into planning a drive, and the outcomes we have had. The workshop will be modeled for students to be able to replicate this program for other sites to utilize the donation bins and provide clothing and bedding donations to their sites. " },
+          { id:"bC_s5_403", name:"Workshop #3: Safe Third Spaces (Lauren Patrick, Tyler Grigsby/826DC)", topic:"USC 403", time:"3:30–4:00pm", capacity:50,
+            desc:" This interactive workshop explores how educators, community leaders, and youth practitioners can cultivate “third spaces” that affirm students’ identities and foster self-discovery beyond the classroom and home. Drawing on their work in community-based literacy and youth programming, Lauren Patrick and Tyler Grigsby will share practical strategies for building inclusive, creative environments where young people feel seen, valued, and empowered to express themselves. Participants will engage in reflective activities and leave with actionable tools to strengthen community partnerships, support student voice, and design spaces rooted in care, belonging, and transformative learning." },
+          { id:"bC_s5_aud", name:"Workshop #4:Campus Compact Spotlight", topic:"USC Auditorium", time:"3:30–4:00pm", capacity:100,
+            desc:"Campus Compact’s Up to Us Leadership Network civic leaders cohort brings together undergraduate students from across the country to build the fiscal knowledge and policy skills they need to allow them a seat at today’s decision-making tables, from town halls to campus board rooms to the halls of Congress. SMARTDC and engageDC were well-represented in this year’s inaugural cohort, participants from both programs making up 1/3 of its members in the DC region. Throughout the semester, they have participated in regular, in-person gatherings and virtual nationwide training opportunities. The capstone will bring together students from all cohorts to explore Capitol Hill and take part in workshops as a broader collective. Attendees at this program spotlight will learn more about the participants’ experiences, as well as how to apply to participate in next year’s cohort or other similar programs. This program will also feature the Campus Compact Newman Civic Fellow, Zoë Singleton, to speak about her experiences." }
         ]
       },
       {
         id: "bC_s6", label: "Direct Service Activity  ·  4:10 – 5:00 PM",
         rooms: [
-          { id:"bC_s6_307", name:"USC 307", topic:"Direct Service #1", time:"4:10–5:00pm", capacity:89,
-            desc:"[Placeholder] Add a brief description for Direct Service #1 here. What will attendees learn or do?" },
-          { id:"bC_s6_310", name:"USC 310", topic:"Direct Service #2", time:"4:10–5:00pm", capacity:60,
-            desc:"[Placeholder] Add a brief description for Direct Service #2 here. What will attendees learn or do?" },
-          { id:"bC_s6_403", name:"USC 403", topic:"Direct Service #3", time:"4:10–5:00pm", capacity:50,
-            desc:"[Placeholder] Add a brief description for Direct Service #3 here. What will attendees learn or do?" },
-          { id:"bC_s6_aud", name:"USC Auditorium", topic:"Direct Service #4", time:"4:10–5:00pm", capacity:100,
-            desc:"[Placeholder] Add a brief description for Direct Service #4 here. What will attendees learn or do?" }
+          { id:"bC_s6_307", name:"Direct Service #1: Making Kits for Miriam's Kitchen with NRHH", topic:"USC 307", time:"4:10–5:00pm", capacity:89,
+            desc:"This hands-on workshop, hosted by NRHH, centers on direct service and community impact. Participants will assemble care kits for guests at Miriam’s Kitchen, supporting individuals experiencing homelessness in the DC area. Following this activity, participants will create cards for hospitalized children that will be distributed at various children’s hospitals and Ronald McDonald Houses.The Capitol Chapter of the National Residence Hall Honorary (NRHH) represents the top 1% of student residential leaders at GW. One of the pillars of NRHH is Service." },
+          { id:"bC_s6_310", name:"Direct Service #2:Art Build for Mutual Aid", topic:"USC 310", time:"4:10–5:00pm", capacity:60,
+            desc:"Calling all creatives! This workshop will focus on creating art and products to raise money for mutual aid in our communities. There will be a discussion of mutual aid before crafting. Current ideas include: making bracelets, bookmarks, buttons, and patches." },
+          { id:"bC_s6_403", name:"Direct Service #3:Food Drive Organization", topic:"USC 403", time:"4:10–5:00pm", capacity:50,
+            desc:"We will be processing donations from the day and preparing them for donation. There will also be a discussion of Food Apartheid in DC. " },
+          { id:"bC_s6_aud", name:"Direct Service #4: Anti- bullying skits ", topic:"USC Auditorium", time:"4:10–5:00pm", capacity:100,
+            desc:"SMARTDC participants encouraged to attend! Discussion of anti-bullying practices and to implement them at your sites. Students will also create and preform anti-bullying skits." },
+          { id:"bC_s6_oaud", name:"Outside of USC Auditorium ", topic:"Direct Service Opportunity #5: Help the GroW Garden Grow! ", time:"4:10–5:00pm", capacity:20,
+          desc:"Come complete direct service and support the GroW Garden as they prepare for the summer by cleaning up weeds, dried plants, and seedlings! The GroW Garden offers George Washington University students and community members a place to learn about native, organic food systems by providing service opportunities in sustainable gardening, food distribution, and community outreach. All the produce is grown to support the work of Miriam's Kitchen, a nonprofit organization that aims to end chronic homelessness in Washington D.C. Miriam's Kitchen incorporates fresh, local produce into the meals they serve to their guests Monday through Friday, every week of the year." }
         ]
       }
     ]
